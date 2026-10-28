@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>數字心靈學 ‧ 八星數理分析儀</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0d0a1a 0%, #17132e 50%, #1e163d 100%);
+      --card-bg: rgba(30, 25, 55, 0.75);
+      --gold-primary: #f0c05a;
+      --gold-light: #ffea9f;
+      --text-main: #f5f5f7;
+      --text-sub: #c3c2d4;
+      --border-gold: rgba(240, 192, 90, 0.35);
+      --good-color: #38ef7d;
+      --bad-color: #ff5252;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 30px 15px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 820px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-gold);
+      border-radius: 20px;
+      padding: 35px 25px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(240, 192, 90, 0.15);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 14px;
+      background: rgba(240, 192, 90, 0.15);
+      border: 1px solid var(--border-gold);
+      border-radius: 50px;
+      color: var(--gold-light);
+      font-size: 13px;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 26px;
+      color: var(--gold-primary);
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--text-sub);
+      font-size: 14px;
+    }
+
+    .input-box {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      background: rgba(15, 12, 30, 0.8);
+      border: 1px solid rgba(240, 192, 90, 0.4);
+      border-radius: 12px;
+      padding: 14px 18px;
+      color: #fff;
+      font-size: 18px;
+      letter-spacing: 2px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 12px rgba(240, 192, 90, 0.3);
+    }
+
+    button {
+      background: linear-gradient(135deg, #f0c05a 0%, #d4972e 100%);
+      color: #17112b;
+      border: none;
+      border-radius: 12px;
+      padding: 0 26px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(240, 192, 90, 0.4);
+    }
+
+    .results {
+      display: none;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .summary-card {
+      background: rgba(18, 14, 38, 0.85);
+      border-radius: 14px;
+      padding: 20px;
+      border-left: 4px solid var(--gold-primary);
+      margin-bottom: 25px;
+    }
+
+    .summary-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--gold-light);
+      margin-bottom: 8px;
+    }
+
+    .badge-counts {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .count-tag {
+      font-size: 13px;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .count-good { background: rgba(56, 239, 125, 0.15); color: var(--good-color); border: 1px solid rgba(56, 239, 125, 0.3); }
+    .count-bad { background: rgba(255, 82, 82, 0.15); color: var(--bad-color); border: 1px solid rgba(255, 82, 82, 0.3); }
+
+    .section-title {
+      font-size: 16px;
+      color: var(--gold-primary);
+      margin: 20px 0 12px 0;
+      letter-spacing: 1px;
+    }
+
+    .nodes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .node-item {
+      background: rgba(20, 16, 40, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+    }
+
+    .node-item.is-good {
+      border-color: rgba(56, 239, 125, 0.4);
+      background: rgba(20, 45, 30, 0.6);
+    }
+
+    .node-item.is-bad {
+      border-color: rgba(255, 82, 82, 0.4);
+      background: rgba(45, 20, 25, 0.6);
+    }
+
+    .node-num {
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .node-star {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+
+    .node-level {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    .is-good .node-star { color: var(--good-color); }
+    .is-bad .node-star { color: var(--bad-color); }
+
+    .dimension-box {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .dim-card {
+      background: rgba(20, 16, 42, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 15px;
+    }
+
+    .dim-header {
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--gold-light);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dim-desc {
+      font-size: 14px;
+      color: var(--text-sub);
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="badge">數字心靈學 ‧ 易學智慧</div>
+    <h1>電話號碼八星磁場運勢推算</h1>
+    <div class="subtitle">輸入手機號碼，自動依八星數理與 0/5 變色龍法則深度解析</div>
+  </div>
+
+  <div class="input-box">
+    <input type="text" id="phoneInput" placeholder="請輸入手機號碼 (例如: 62812599 或 55931439)" maxlength="16">
+    <button onclick="runAnalysis()">開始推算</button>
+  </div>
+
+  <div class="results" id="resultsBox">
+    <div class="summary-card">
+      <div class="summary-title" id="summaryText">格局總評</div>
+      <div id="chainText" style="font-size: 13px; color: var(--text-sub); margin-bottom: 8px;"></div>
+      <div class="badge-counts">
+        <span class="count-tag count-good" id="goodCount">吉星：0組</span>
+        <span class="count-tag count-bad" id="badCount">凶星：0組</span>
+      </div>
+    </div>
+
+    <div class="section-title">✦ 磁場切分與八星排列</div>
+    <div class="nodes-grid" id="nodesContainer"></div>
+
+    <div class="section-title">✦ 三維運勢深度診斷</div>
+    <div class="dimension-box">
+      <div class="dim-card">
+        <div class="dim-header">💰 財富與財運分析</div>
+        <div class="dim-desc" id="wealthDesc"></div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-header">💼 事業與貴人格局</div>
+        <div class="dim-desc" id="careerDesc"></div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-header">❤️ 感情與人際關係</div>
+        <div class="dim-desc" id="loveDesc"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STAR_MAP = {
+  "11": ["伏位", "吉", 1, "蓄勢待發、沉穩謹慎"],
+  "22": ["伏位", "吉", 1, "蓄勢待發、沉穩謹慎"],
+  "88": ["伏位", "吉", 2, "謹慎保守、狀況延續"],
+  "99": ["伏位", "吉", 2, "謹慎保守、狀況延續"],
+  "66": ["伏位", "吉", 3, "固執被動、思考充電"],
+  "77": ["伏位", "吉", 3, "固執被動、思考充電"],
+  "33": ["伏位", "吉", 4, "內斂猶豫、停滯等待"],
+  "44": ["伏位", "吉", 4, "內斂猶豫、停滯等待"],
+  "14": ["生氣", "吉", 1, "頂級大貴人、高EQ、起死回生"],
+  "41": ["生氣", "吉", 1, "頂級大貴人、高EQ、起死回生"],
+  "67": ["生氣", "吉", 2, "朋友相助、逢凶化吉"],
+  "76": ["生氣", "吉", 2, "朋友相助、逢凶化吉"],
+  "39": ["生氣", "吉", 3, "隨和樂觀、人脈通達"],
+  "93": ["生氣", "吉", 3, "隨和樂觀、人脈通達"],
+  "28": ["生氣", "吉", 4, "樂天知命、順其自然"],
+  "82": ["生氣", "吉", 4, "樂天知命、順其自然"],
+  "19": ["延年", "吉", 1, "獨當一面、事業領袖、責任心強"],
+  "91": ["延年", "吉", 1, "獨當一面、事業領袖、責任心強"],
+  "78": ["延年", "吉", 2, "專業抗壓、作風強勢、守財"],
+  "87": ["延年", "吉", 2, "專業抗壓、作風強勢、守財"],
+  "34": ["延年", "吉", 3, "穩重踏實、默默掌舵"],
+  "43": ["延年", "吉", 3, "穩重踏實、默默掌舵"],
+  "26": ["延年", "吉", 4, "保守經營、溫和負責"],
+  "62": ["延年", "吉", 4, "保守經營、溫和負責"],
+  "13": ["天醫", "吉", 1, "核心大正財、老闆格局、正緣"],
+  "31": ["天醫", "吉", 1, "核心大正財、老闆格局、正緣"],
+  "68": ["天醫", "吉", 2, "富足豐厚、善良大愛"],
+  "86": ["天醫", "吉", 2, "富足豐厚、善良大愛"],
+  "49": ["天醫", "吉", 3, "穩定財源、心思善良"],
+  "94": ["天醫", "吉", 3, "穩定財源、心思善良"],
+  "27": ["天醫", "吉", 4, "小康生活、隨緣之財"],
+  "72": ["天醫", "吉", 4, "小康生活、隨緣之財"],
+  "17": ["禍害", "凶", 1, "口才極佳、易招小人、鐵齒暴躁"],
+  "71": ["禍害", "凶", 1, "口才極佳、易招小人、鐵齒暴躁"],
+  "89": ["禍害", "凶", 2, "爭強好辯、愛面子、虛耗健康"],
+  "98": ["禍害", "凶", 2, "爭強好辯、愛面子、虛耗健康"],
+  "46": ["禍害", "凶", 3, "嘮叨碎念、心浮氣躁"],
+  "64": ["禍害", "凶", 3, "嘮叨碎念、心浮氣躁"],
+  "23": ["禍害", "凶", 4, "直言直語、小有摩擦"],
+  "32": ["禍害", "凶", 4, "直言直語、小有摩擦"],
+  "16": ["六煞", "凶", 1, "八面玲瓏、爛桃花多、焦慮糾結"],
+  "61": ["六煞", "凶", 1, "八面玲瓏、爛桃花多、焦慮糾結"],
+  "47": ["六煞", "凶", 2, "多愁善感、感情猶豫"],
+  "74": ["六煞", "凶", 2, "多愁善感、感情猶豫"],
+  "38": ["六煞", "凶", 3, "缺乏安全感、人際內耗"],
+  "83": ["六煞", "凶", 3, "缺乏安全感、人際內耗"],
+  "29": ["六煞", "凶", 4, "內心糾結、被動敏感"],
+  "92": ["六煞", "凶", 4, "內心糾結、被動敏感"],
+  "12": ["絕命", "凶", 1, "大起大落、極端衝動、易有官非"],
+  "21": ["絕命", "凶", 1, "大起大落、極端衝動、易有官非"],
+  "69": ["絕命", "凶", 2, "投資孤注一擲、財來財去"],
+  "96": ["絕命", "凶", 2, "投資孤注一擲、財來財去"],
+  "48": ["絕命", "凶", 3, "好勝逞強、起伏不定"],
+  "84": ["絕命", "凶", 3, "好勝逞強、起伏不定"],
+  "37": ["絕命", "凶", 4, "做事果決、守財較弱"],
+  "73": ["絕命", "凶", 4, "做事果決、守財較弱"],
+  "18": ["五鬼", "凶", 1, "才華出眾、多變熬夜、暗耗破財"],
+  "81": ["五鬼", "凶", 1, "才華出眾、多變熬夜、暗耗破財"],
+  "79": ["五鬼", "凶", 2, "神祕多疑、偏財急耗、分離"],
+  "97": ["五鬼", "凶", 2, "神祕多疑、偏財急耗、分離"],
+  "36": ["五鬼", "凶", 3, "思維敏捷、想法反覆"],
+  "63": ["五鬼", "凶", 3, "思維敏捷、想法反覆"],
+  "24": ["五鬼", "凶", 4, "心思細微、偏愛非常規"],
+  "42": ["五鬼", "凶", 4, "心思細微、偏愛非常規"]
+};
+
+function runAnalysis() {
+  const raw = document.getElementById("phoneInput").value.trim();
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length < 2) {
+    alert("請輸入至少2位數字的手機號碼！");
+    return;
+  }
+
+  // 1. Edge rules for 0 and 5
+  let arr = digits.split("");
+  let firstReal = -1;
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] !== '0' && arr[i] !== '5') { firstReal = i; break; }
+  }
+  if (firstReal > 0) {
+    for (let i = 0; i < firstReal; i++) arr[i] = arr[firstReal];
+  }
+
+  let lastReal = -1;
+  for (let i = arr.length - 1; i >= 0; i--) {
+    if (arr[i] !== '0' && arr[i] !== '5') { lastReal = i; break; }
+  }
+  if (lastReal !== -1 && lastReal < arr.length - 1) {
+    for (let i = lastReal + 1; i < arr.length; i++) arr[i] = arr[lastReal];
+  }
+  const trans = arr.join("");
+
+  // 2. Sliding window & middle 0/5
+  const segments = [];
+  let i = 0;
+  while (i < trans.length - 1) {
+    if (i + 2 < trans.length && (trans[i+1] === '0' || trans[i+1] === '5')) {
+      const pair = trans[i] + trans[i+2];
+      const mid = trans[i+1];
+      if (STAR_MAP[pair]) {
+        const item = STAR_MAP[pair];
+        segments.push({
+          slice: trans.slice(i, i+3),
+          pair: pair,
+          star: item[0],
+          type: item[1],
+          level: item[2],
+          desc: item[3] + (mid === '5' ? ' (5顯化加倍)' : ' (0隱藏暗蓄)')
+        });
+        i += 2;
+        continue;
+      }
+    }
+    const pair = trans.slice(i, i+2);
+    if (STAR_MAP[pair]) {
+      const item = STAR_MAP[pair];
+      segments.push({ slice: pair, pair: pair, star: item[0], type: item[1], level: item[2], desc: item[3] });
+    } else {
+      segments.push({ slice: pair, pair: pair, star: "伏位", type: "吉", level: 3, desc: "狀況延續、保守思考" });
+    }
+    i += 1;
+  }
+
+  // 3. Render
+  let good = 0, bad = 0;
+  const starCounts = { "伏位":0, "生氣":0, "延年":0, "天醫":0, "禍害":0, "六煞":0, "絕命":0, "五鬼":0 };
+  const container = document.getElementById("nodesContainer");
+  container.innerHTML = "";
+
+  segments.forEach(seg => {
+    if (seg.type === "吉") good++; else bad++;
+    if (starCounts[seg.star] !== undefined) starCounts[seg.star]++;
+
+    const node = document.createElement("div");
+    node.className = `node-item ${seg.type === "吉" ? "is-good" : "is-bad"}`;
+    node.innerHTML = `
+      <div class="node-num">${seg.slice}</div>
+      <div class="node-star">${seg.star}</div>
+      <div class="node-level">${seg.level}級 ‧ ${seg.type === "吉" ? "吉星" : "凶星"}</div>
+    `;
+    container.appendChild(node);
+  });
+
+  document.getElementById("goodCount").innerText = `吉星：${good} 組`;
+  document.getElementById("badCount").innerText = `凶星：${bad} 組`;
+
+  // Summary logic
+  let sumText = "";
+  if (bad === 0) sumText = "【全吉上等格局】純吉無凶，磁場純淨和順，福慧圓滿！";
+  else if (good >= bad * 2) sumText = "【吉多於凶之平吉格】吉曜光環強盛，足以化解微凶，瑕不掩瑜。";
+  else if (bad > good) sumText = "【凶星偏盛需修心調和】內耗衝動磁場較強，需秉持『寬讓淡』戒嗔制怒。";
+  else sumText = "【吉凶參半兩極格】波折與機會並存，宜發揮長處並防衝動冒險。";
+  document.getElementById("summaryText").innerText = sumText;
+  document.getElementById("chainText").innerText = `數理序列：${digits} (轉化: ${trans})`;
+
+  // Dimension details
+  let wDesc = starCounts["天醫"] > 0
+    ? `坐擁天醫吉星（${starCounts["天醫"]}組），正財吸金力強，利於事業創富。` + (starCounts["延年"] > 0 ? " 同時得延年星守護庫存，能賺又能守！" : " 建議搭配穩健理財守成。")
+    : "號碼內缺乏天醫正財星，財運需靠個人腳踏實地積累；" + ((starCounts["五鬼"] > 0 || starCounts["絕命"] > 0) ? " 且帶有五鬼或絕命，需嚴防衝動投資破財。" : " 宜守成安穩。");
+  document.getElementById("wealthDesc").innerText = wDesc;
+
+  let cDesc = (starCounts["生氣"] > 0 && starCounts["延年"] > 0)
+    ? "具備延年領袖力與生氣高情商，貴人提攜，辦事圓融，具掌舵者之風。"
+    : (starCounts["生氣"] > 0 ? "人緣極佳，隨遇而安，常有逢凶化吉之貴人轉機。" : (starCounts["延年"] > 0 ? "責任心極強，獨當一面抗壓能耐高。" : "事業平穩守常，行事以按部就班為主。"));
+  document.getElementById("careerDesc").innerText = cDesc;
+
+  let lDesc = starCounts["六煞"] > 0
+    ? "情感心思敏銳細膩，但容易內心糾結或冷戰猜忌，需學會放寬心態、多些包容。"
+    : (starCounts["天醫"] > 0 ? "自帶正緣良善桃花，伴侶相處和睦，家庭氛圍溫暖。" : "感情生活平順安穩，無過多大起大落之波折。");
+  document.getElementById("loveDesc").innerText = lDesc;
+
+  document.getElementById("resultsBox").style.display = "block";
+}
+</script>
+</body>
+</html>
